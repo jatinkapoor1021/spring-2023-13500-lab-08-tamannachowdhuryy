@@ -9,6 +9,7 @@ This program will changed the photos to the way it needs to be. For example Task
 
 #include <iostream>
 #include "imageio.h"
+#include "funcs.h"
 #include <cmath>
 #include <cstdlib>
 
