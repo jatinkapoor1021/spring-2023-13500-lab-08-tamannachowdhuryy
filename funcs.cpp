@@ -1,123 +1,119 @@
-/*
-Author: Tamanna Chowdhury
-Course: CSCI-135
-Instructor: Mike Zamansky
-Assignment: Lab8 A,B,C,D,E,F
-
-This program will changed the photos to the way it needs to be. For example Task A will make the photo inverted
-*/
-
-#include <iostream>
-#include "imageio.h"
 #include "funcs.h"
+#include "imageio.h"
+#include <string>
 #include <cmath>
-#include <cstdlib>
 
-// Task A
-void invert(std::string file) {
-	int image[MAX_H][MAX_W];
-	int height, width;
-
-	readImage(file, image, height, width);
-
-	for (int i = 0; i < MAX_H; i++) { // for loop for row 
-		for (int j = 0; j < MAX_W; j++) {  //for loop for col
-			image[i][j] = abs(image[i][j] - 255); // subtracting by 255 b/c thats the white color we need to make tge image inverted
-		}
-	}
-
-	writeImage("taskA.pgm", image, height, width); // this will print the image out like it was shown in the lab 
+    // TASK A - function that inverts all colors, so white shades become black, and black become white
+    // Since black = 0, and white = 255, you should do the following transformation for each pixel color:
+    // 0 → 255
+    // 1 → 254
+    // 2 → 253
+void invert(std::string file){  // taking in the image as a parameter
+    int height, width;
+    int image[MAX_H][MAX_W];
+    readImage(file, image, height, width);
+        // using a nested for loop to go through the coloumns and rows of the image 
+    for(int row = 0; row < MAX_H; row++){
+        for(int col = 0; col < MAX_W; col++){
+            image[row][col] = 255 - image[row][col];    // subtracting 255 pixel colors to invert the image
+        }
+    }
+    writeImage("taskA.pgm", image, height, width);  // output image
 }
 
-
-// Task B
-void invert_half(std::string file) { // this is where the image will be half inverted 
-	int image[MAX_H][MAX_W]; // made an int for the image for the max height adn width 
-	int height, width; // int for the regular height and width 
-
-	readImage(file, image, height, width); // this will read the file given (cat for main.cpp) will read it and get the height and width 
-
-	for (int i= 0; i < MAX_H; i++) { // we will do the same thing in task a where we put it in a for loop 
-		for (int j = width / 2; j < MAX_W; j++) { // this time we will divide it in half so one side will stay normal and the other will change to inverted
-			image[i][j] = abs(image[i][j] - 255);
-		}
-	}
-
-	writeImage("taskB.pgm", image, height, width); // this will change the image and rename it as taskB and print out the new image for the height and width that it was given 
-}
-
-
-// Task C
-void box(std::string file) { // this will put a box in the middle of the picture 
-	int image[MAX_H][MAX_W]; // we declear the image max and width and height
-	int height, width;
-	readImage(file, image, height, width); // then the image will read for us to change the code later on
-
-	for (int i = height / 4; i < height * 3/4; i++) { // for loop but this time we will make the height divide by 4 and multiply by 3/4 to get the box to be in the middle
-		for (int j = width / 4; j < width * 3/4; j++) {
-			image[i][j] = 255; // the image will display just white so we won't subtract it 
-		}
-	}
-
-	writeImage("taskC.pgm", image, height, width); // will reprint the image with the new edits from the code 
-}
-
-
-// Task D
-void frame(std::string file) { // this where we put a frame in the middle of the image 
-	int image[MAX_H][MAX_W]; // declare max hieght and width 
-	int height, width;
-	readImage(file, image, height, width); // will read the original image so it can make the edits laster 
-
-	for (int i = height / 4; i < height * 3/4; i++) { // doing the same thing from task C 
-		for (int j = width / 4; j < width * 3/4; j++) { 
-			if (i == height / 4 || i == height * 3/4 - 1 || j == width / 4 || j == width * 3/4 - 1) { // this time we will be using an if statement where we divide the height by 4 and give the computer or statements so it knows what to do when making the border 
-				image[i][j] = 255; // this will make the boarder white 
+    // TASK B - function that  that inverts the colors only in the right half of the picture.
+void invert_half(std::string file){
+    int height, width;
+    int image[MAX_H][MAX_W];
+    readImage(file, image, height, width);
+    for(int row = 0; row < MAX_H; row++){
+        for(int col = 0; col < MAX_W; col++){
+                // modified the inner loop to only iterate over the columns on the right half of the image by 
+                // setting the loop's starting point to w/2
+                // which is the index of the first column in the right half of the image
+			if(col>(width/2)){
+            	image[row][col] = 255 - image[row][col];    // subtracting 255 pixel colors to invert the image
 			}
-		}
-	}
-
-	writeImage("taskD.pgm", image, height, width); // replaces the image with the edits 
+        }
+    }
+    writeImage("taskB.pgm", image, height, width);	
 }
 
+    // TASK C - function that draws a white box exactly in the middle of the picture. 
+    // The dimensions of the box should be 50% by 50% of the original picture’s width and height.
+void box_image(std::string file){
+    int height, width;
+    int image[MAX_H][MAX_W];
+    readImage(file, image, height, width);
+    for(int row = 0; row < MAX_H; row++){
+        for(int col = 0; col < MAX_W; col++){
+                // modified the inner loop to only iterate over the 50% by 50%  of the original picture
+			if(col>(width/4) && col<(3*width/4) && row>(height/4) && row<(3*height/4)){
+            	image[row][col] = 255;  // white = 255
+			}
+        }
+    }
+    writeImage("taskC.pgm", image, height, width);	
+}
 
-// Task E
-void scale(std::string file) { // this will scale the image to be bigger 
-	int image[MAX_H][MAX_W]; // images max hieght and width 
-	int output[MAX_H][MAX_W]; // the output of hieght and width 
-	int height, width;
-	readImage(file, image, height, width); // will then read the image of the hieght and width 
+    // TASK D - function that creates a frame exactly one pixel thick 
+void line_image(std::string file){
+    int height, width;
+    int image[MAX_H][MAX_W];
+    readImage(file, image, height, width);
+    for(int row = 0; row < MAX_H; row++){
+        for(int col = 0; col < MAX_W; col++){
+                // checking the dimensions of the image to create the box in the middle of the image
+			if(col>=(width/4) && col<=(3*width/4) && row>=(height/4) && row<=(3*height/4)){
+				if(col==(width/4) || col==(3*width/4) || row==(height/4) || row==(3*height/4)){
+            		image[row][col] = 255;  // set the pixel values of the frame to white
+				}
+			}
+        }
+    }
+    writeImage("taskD.pgm", image, height, width);		
+}
 
-	for (int i = 0; i < height; i++) {  // same code from the previous tasks
-		for (int j = 0; j < width; j++) {
-			output[i * 2][j * 2] = image[i][j]; // the output will print the row and colunm and multiply it by e 
-			output[i * 2][j * 2 + 1] = image[i][j]; // do the same thing except add by 1
-			output[i * 2 + 1][j * 2] = image[i][j];
-			output[i * 2 + 1][j * 2 + 1] = image[i][j];
-		}
-	}
-	height *= 2; //  mulptipy by 2 for hieght and width to double the image 
-	width *= 2;
+    // TASK E - function that scales the original picture to 200% of its size
+    // increasing the size of the pictyre by the factor of 2, 
+    // and copying each pixel of the input as a small 2x2 square in the output
+void twice_image(std::string file){
+    int height, width;
+    int image[MAX_H][MAX_W];
+    int newimage[MAX_H][MAX_W]; // create a new image array to hold the scaled image
+    readImage(file, image, height, width);
+        // copy the pixel value into a 2x2 square in the new image array
+        // double the height and width of the image
+    for(int row = 0; row < height; row++){
+        for(int col = 0; col < width; col++){
+            newimage[row*2][col*2] = image[row][col];
+            newimage[row*2][col*2+1] = image[row][col];
+            newimage[row*2+1][col*2] = image[row][col];
+            newimage[row*2+1][col*2+1] = image[row][col];
+        }
+    }
+    writeImage("taskE.pgm", newimage, 2*height, 2*width);
+}
 
-	writeImage("taskE.pgm", output, height, width); // replaces the image with the new one
-} 
-
-
-// Task F
-void pixelate(std::string file) { // this will make the image kinda blury 
-	int image[MAX_H][MAX_W];
-	int height, width;
-	readImage(file, image, height, width); // same thing from the previous codes 
-
-	for (int i = 0; i < height; i += 2) {
-		for (int j = 0; j < width; j += 2) {
-			int avg = (image[i][j] + image[i][j+1] + image[i+1][j] + image[i+1][j+1]) / 4; // go through and make the changed from column to row to make it pixilated
-			image[i][j] = avg;
-			image[i][j+1] = avg;
-			image[i+1][j] = avg;
-			image[i+1][j+1] = avg;
-		}
-	}
-
-	writeImage("taskF.pgm", image, height, width); // this will print the final image 
+    // TASK F - function that pixelates the input image
+    // One way to pixelate an image is to effectively make every 2x2 non-overlapping window 
+    // contain the same value (averaged over all the pixels in that window of the input).
+void pixel_image(std::string file){
+    int height, width;
+    int image[MAX_H][MAX_W];
+    int newimage[MAX_H][MAX_W];  // create a new image array to hold the scaled image 
+    readImage(file, image, height, width);
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+                // set the pixel value in the new image array to the computed average
+            int avg = round((image[row][col]+image[row][col+1] + image[row+1][col] + image[row+1][col+1]) / 4);
+                newimage[row][col] = avg;
+                newimage[row][col+1] = avg;
+                newimage[row+1][col] = avg;
+                newimage[row+1][col+1] = avg;
+                col = col + 1;
+                }
+                row++;
+        }
+        writeImage("taskF.pgm", newimage, height, width);
 }
